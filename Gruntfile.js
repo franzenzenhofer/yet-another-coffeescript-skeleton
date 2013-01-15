@@ -1,5 +1,7 @@
 module.exports = function(grunt) {
 
+  js_to_watch = ['js/src/main.js']
+  css_to_watch = ['css/src/main.css']
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -8,8 +10,12 @@ module.exports = function(grunt) {
       separator: ';'
     },
     js: {
-      src: ['js/src/main.js'],
+      src: js_to_watch,
       dest: 'js/lib/main.js'
+    },
+    css: {
+      src: css_to_watch,
+      dest: 'css/lib/main.css'
     }
   },
     uglify: {
@@ -31,6 +37,27 @@ module.exports = function(grunt) {
         'html/min/index.html': 'html/src/index.html'
       }
     }
+  },
+  mincss: {
+  compress: {
+    files: {
+      "css/lib/main.min.css": 'css/lib/main.css'
+    }
+  }
+},
+  watch: {
+    js: {
+      files: js_to_watch,
+      tasks: ['concat', 'uglify']
+    },
+    css: {
+      files: css_to_watch,
+      tasks: ['concat', 'mincss']
+    },
+    html: {
+      files: 'html/src/index.html',
+      tasks: ['htmlmin']
+    }
   }
   });
 
@@ -38,6 +65,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-htmlmin');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-mincss');
 
   // Default task(s).
   grunt.registerTask('default', ['concat','uglify', 'htmlmin']);
