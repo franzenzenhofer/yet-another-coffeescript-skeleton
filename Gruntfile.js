@@ -1,100 +1,119 @@
+/*global module:false*/
 module.exports = function(grunt) {
 
-  js_to_watch = ['js/src/main.js']
-  css_to_watch = ['css/src/main.css']
+  var packagejson = grunt.file.readJSON('package.json');
   // Project configuration.
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
+    // Metadata.
+    pkg: packagejson,
+    banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - last build: <%= grunt.template.today("yyyy-mm-dd HH:MM:ss") %> */\n',
+    // Task configuration.
     concat: {
-    options: {
-      separator: ';'
+      options: {
+        banner: '<%= banner %>',
+        stripBanners: true
+      },
+      dist: {
+        src: packagejson.buildfiles,
+        dest: '<%= pkg.buildto %>'
+      },
+      coffee: {
+        options: {banner: '# <%= banner %>'},
+        src: packagejson.coffeesrc,
+        dest: 'js/temp/main.coffee'
+      }
     },
-    js: {
-      src: js_to_watch,
-      dest: 'js/lib/main.js'
-    },
-    css: {
-      src: css_to_watch,
-      dest: 'css/lib/main.css'
-    }
-  },
     uglify: {
       options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+        banner: '<%= banner %>',
+        mangle: true,
+        compress: false, //compress must be false, otherwise behaviour change!!!!!
+        beautify: false
       },
-      js: {
-        src: 'js/src/main.js',
-        dest: 'js/lib/main.min.js'
+      dist: {
+        src: '<%= concat.dist.dest %>',
+        dest: '<%= pkg.buildmin %>'
       }
     },
-     htmlmin: {                                     // Task
-    dist: {                                      // Target
-      options: {                                 // Target options
-        removeComments: true,
-        collapseWhitespace: true
+    jshint: {
+      options: {
+        curly: true,
+        eqeqeq: true,
+        immed: true,
+        latedef: true,
+        newcap: true,
+        noarg: true,
+        sub: true,
+        undef: true,
+        unused: true,
+        boss: true,
+        eqnull: true,
+        browser: true,
+        globals: {
+          jQuery: true
+        }
       },
-      files: {                                   // Dictionary of files
-        'html/min/index.html': 'html/src/index.html'
+      gruntfile: {
+        src: 'Gruntfile.js'
+      }//,
+      //coffee: {
+      //  src: 'js/temp/*.js'
+      //}//,
+      //lib_test: {
+      //  src: ['lib/**/*.js', 'test/**/*.js']
+      //}
+    },
+    //qunit: {
+    //  files: ['test/**/*.html']
+    //},
+    coffee: {
+      options: {
+        bare:false
+      },
+      testcompile: {
+        expand: true,
+        cwd: 'js/src',
+        src: ['*.coffee'],
+        dest: 'js/temp/',
+        ext: '.js'
+        },
+      build: {
+        files: {
+          '<%= pkg.coffeedest %>': '<%= concat.coffee.dest %>'
+        }
       }
+     },
+    watch: {
+      gruntfile: {
+        files: '<%= jshint.gruntfile.src %>',
+        tasks: ['jshint:gruntfile']
+      },
+      dist: {
+        files: packagejson.buildfiles,
+        tasks: ['concat', 'uglify']
+      },
+      coffee: {
+        files: packagejson.coffeesrc,
+        tasks: ['concat:coffee','coffee:testcompile', 'coffee:build']
+      }//,
+      //lib_test: {
+      //  files: '<%= jshint.lib_test.src %>',
+      //  tasks: ['jshint:lib_test', 'qunit']
+      //}
     }
-  },
-  mincss: {
-  compress: {
-    files: {
-      "css/lib/main.min.css": 'css/lib/main.css'
-    }
-  }
-},
-
-  watch: {
-    js: {
-      files: js_to_watch,
-      tasks: ['concat', 'uglify']
-    },
-    css: {
-      files: css_to_watch,
-      tasks: ['concat', 'mincss']
-    },
-    html: {
-      files: 'html/src/index.html',
-      tasks: ['htmlmin']
-    },
-    img: {
-      files: 'img/src/*',
-      tasks: ['pngmin','gifmin','jpgmin']
-    }
-  }
   });
 
-  // Load the plugin that provides the "uglify" task.
-  grunt.loadNpmTasks('grunt-contrib-uglify');
+  // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-htmlmin');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  //grunt.loadNpmTasks('grunt-contrib-nodeunit');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-mincss');
- // grunt.loadNpmTasks('grunt-imagine'); // outdated version
- /*
-pngmin: {
-  src: [
-    'img/src/*.png',
-  ],
-  dest: 'img/opt'
-},
-gifmin: {
-  src: [
-    'img/src/*.gif',
-  ],
-  dest: 'img/opt'
-},
-jpgmin: {
-  src: [
-    'img/src/*.gif',
-  ],
-  dest: 'img/opt'
-},
- */
+  grunt.loadNpmTasks('grunt-contrib-coffee');
 
-  // Default task(s).
-  grunt.registerTask('default', ['concat','uglify', 'htmlmin']);
+  // Default task.
+  //grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
+  //grunt.registerTask('default', ['jshint', 'concat', 'uglify', 'watch']);
+  grunt.registerTask('default', ['concat:coffee', 'coffee', 'jshint', 'concat', 'uglify', 'watch']);
 
 };
