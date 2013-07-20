@@ -8,13 +8,16 @@
     "grunt": "0.4.1"
   },
   "devDependencies": {
-    "grunt": "~0.4.0rc8",
-    "coffee-script": "1.4.0",
-    "grunt-contrib-uglify": "~0.1.1rc6",
-    "grunt-contrib-concat": "~0.1.2rc6",
-    "grunt-contrib-watch": "~0.2.0rc7",
-    "grunt-contrib-coffee": "~0.4.0rc7",
-    "grunt-contrib-jshint": "~0.1.1rc6"
+    "grunt": "0.4",
+    "coffee-script": "1.*",
+    "grunt-contrib-uglify": "~0.1.1",
+    "grunt-contrib-concat": "~0.1.2",
+    "grunt-contrib-watch": "~0.2.0",
+    "grunt-contrib-coffee": "~0.4.0",
+    "grunt-contrib-jshint": "~0.1.1",
+    "grunt-contrib-imagemin": "~0.1.4",
+    "grunt-contrib-htmlmin": "~0.1.1",
+    "grunt-contrib-cssmin": "~0.5.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

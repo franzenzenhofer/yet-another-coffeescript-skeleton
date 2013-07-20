@@ -83,6 +83,24 @@ module.exports = function(grunt) {
         }
       }
      },
+    htmlmin: {                                     // Task
+    dist: {                                      // Target
+      options: {                                 // Target options
+        removeComments: true,
+        collapseWhitespace: true
+      },
+      files: {                                   // Dictionary of files
+        'html/min/index.html': 'html/src/index.html'     // 'destination': 'source'
+        }
+      }
+    },
+    cssmin: {
+  compress: {
+    files: {
+      'css/lib/main.min.css': ['css/src/main.css']
+      }
+    }
+  },
     watch: {
       gruntfile: {
         files: '<%= jshint.gruntfile.src %>',
@@ -95,6 +113,14 @@ module.exports = function(grunt) {
       coffee: {
         files: packagejson.coffeesrc,
         tasks: ['concat:coffee','coffee:testcompile', 'coffee:build']
+      },
+      htmlmin: {
+        files: "html/src/index.html",
+        tasks: ['htmlmin']
+      },
+      cssmin: {
+        files: "css/src/main.css",
+        tasks: ['cssmin']
       }//,
       //lib_test: {
       //  files: '<%= jshint.lib_test.src %>',
@@ -110,6 +136,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-coffee');
+  grunt.loadNpmTasks('grunt-contrib-htmlmin');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
 
   // Default task.
   //grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
