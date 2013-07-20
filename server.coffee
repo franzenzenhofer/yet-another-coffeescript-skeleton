@@ -7,6 +7,7 @@ io = require('socket.io').listen(server)
 port = if process.env.PORT then process.env.PORT else 3000
 
 app.use(express.static(__dirname + '/public'));
+#app.use(express.static(__dirname + '/'));
 app.enable('trust proxy')
 
 #commented out, as we are currently delivering the static index.html
@@ -14,13 +15,13 @@ app.enable('trust proxy')
 #  res.send('Hello World')
 #)
 
-io.sockets.on('connection', (socket) ->
-  socket.emit('news', { hello: 'world' })
-  
-  socket.on('my other event', (data) -> 
-    console.log(data)
-  )
-)
+#io.sockets.on('connection', (socket) ->
+#  socket.emit('news', { hello: 'world' })
+#  
+#  socket.on('my other event', (data) -> 
+#    console.log(data)
+#  )
+#)
 
 
 
