@@ -101,6 +101,13 @@ module.exports = function(grunt) {
       }
     }
   },
+   copy: {
+  css: {
+    files: {
+      'css/lib/main.css': ['css/src/main.css']
+      }
+    }
+  },
     watch: {
       gruntfile: {
         files: '<%= jshint.gruntfile.src %>',
@@ -120,7 +127,7 @@ module.exports = function(grunt) {
       },
       cssmin: {
         files: "css/src/main.css",
-        tasks: ['cssmin']
+        tasks: ['cssmin', 'copy:css']
       }//,
       //lib_test: {
       //  files: '<%= jshint.lib_test.src %>',
@@ -138,6 +145,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-coffee');
   grunt.loadNpmTasks('grunt-contrib-htmlmin');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
   // Default task.
   //grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
