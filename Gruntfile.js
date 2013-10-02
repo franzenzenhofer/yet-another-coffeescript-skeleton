@@ -1,6 +1,5 @@
 /*global module:false*/
 module.exports = function(grunt) {
-
   var packagejson = grunt.file.readJSON('package.json');
   // Project configuration.
   grunt.initConfig({
@@ -13,14 +12,10 @@ module.exports = function(grunt) {
         banner: '<%= banner %>',
         stripBanners: true
       },
-      dist: {
-        src: packagejson.buildfiles,
-        dest: '<%= pkg.buildto %>'
-      },
       coffee: {
         options: {banner: '# <%= banner %>'},
         src: packagejson.coffeesrc,
-        dest: 'js/temp/main.coffee'
+        dest: '<%= pkg.temp %>concat/<%= pkg.name %>.coffee'
       }
     },
     uglify: {
@@ -31,8 +26,8 @@ module.exports = function(grunt) {
         beautify: false
       },
       dist: {
-        src: '<%= concat.dist.dest %>',
-        dest: '<%= pkg.buildmin %>'
+        src: '<%= coffee.build.dest %>',
+        dest: '<%= pkg.buildto %><%= pkg.name %>-complete.min.js'
       }
     },
     jshint: {
@@ -70,17 +65,16 @@ module.exports = function(grunt) {
       options: {
         bare:false
       },
-      testcompile: {
+      singlescompile: {
         expand: true,
-        cwd: 'js/src',
+        cwd: 'js/coffee',
         src: ['*.coffee'],
-        dest: 'js/temp/',
+        dest: '<%= pkg.singles %>',
         ext: '.js'
         },
       build: {
-        files: {
-          '<%= pkg.coffeedest %>': '<%= concat.coffee.dest %>'
-        }
+        src: '<%= concat.coffee.dest %>',
+        dest: '<%= pkg.buildto %><%= pkg.name %>-complete.js'
       }
      },
     htmlmin: {                                     // Task
@@ -90,7 +84,8 @@ module.exports = function(grunt) {
         collapseWhitespace: true
       },
       files: {                                   // Dictionary of files
-        'html/min/index.html': 'html/src/index.html'     // 'destination': 'source'
+        'html/min/index.html': 'html/src/index.html',     // 'destination': 'source'
+        'html/min/test.html': 'html/src/test.html' 
         }
       }
     },
@@ -113,13 +108,9 @@ module.exports = function(grunt) {
         files: '<%= jshint.gruntfile.src %>',
         tasks: ['jshint:gruntfile']
       },
-      dist: {
-        files: packagejson.buildfiles,
-        tasks: ['concat', 'uglify']
-      },
-      coffee: {
+      coffeefiles: {
         files: packagejson.coffeesrc,
-        tasks: ['concat:coffee','coffee:testcompile', 'coffee:build']
+        tasks: ['concat:coffee','coffee', 'uglify']
       },
       htmlmin: {
         files: "html/src/index.html",
@@ -150,6 +141,6 @@ module.exports = function(grunt) {
   // Default task.
   //grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
   //grunt.registerTask('default', ['jshint', 'concat', 'uglify', 'watch']);
-  grunt.registerTask('default', ['concat:coffee', 'coffee', 'jshint', 'concat', 'uglify', 'watch']);
+  grunt.registerTask('default', ['concat:coffee', 'coffee', 'jshint', 'uglify', 'watch']);
 
 };
